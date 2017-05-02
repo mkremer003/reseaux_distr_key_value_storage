@@ -1,8 +1,10 @@
 package lu.uni.reseaux_info.node;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.net.Socket;
 
 import lu.uni.reseaux_info.commons.StreamHelper;
@@ -20,14 +22,17 @@ public class ConnectionHandler extends Thread{
 	@Override
 	public void run(){
 		try{
-			InputStream in = connection.getInputStream();
-			OutputStream out = connection.getOutputStream();
+			BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+			BufferedWriter out = new BufferedWriter(new OutputStreamWriter(connection.getOutputStream()));
 			
-			String[] message = StreamHelper.readFromInput(in).split(":");
-			System.out.println("Received: " + message);
+			String inputLine = StreamHelper.readFromInput(in);
+			String[] message = inputLine.split(":");
+			System.out.println("Received: " + inputLine);
 			if(message[0].equals("SET")) {
 				data.getKeyMap().put(message[2], message[3]);
+				System.out.println("Set: " + data.getKeyMap().get(message[2]));
 				StreamHelper.writeToOutput(out, "RES:" + System.currentTimeMillis()%100000 + ":" + message[2] + ":" + message[3]);
+				System.out.println("Response sent");
 			}else if(message[0].equals("GET")) {
 				//TODO: Get message implementation
 			}else {

@@ -1,6 +1,10 @@
 package lu.uni.reseaux_info.client;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.net.Socket;
 import java.util.Scanner;
 
@@ -36,8 +40,12 @@ public class ClientLauncher {
 				}
 				break;
 			}
+			BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+			BufferedWriter out = new BufferedWriter(new OutputStreamWriter(clientSocket.getOutputStream()));
 			
-			StreamHelper.writeToOutput(clientSocket.getOutputStream(), "This is a test message");
+			StreamHelper.writeToOutput(out, "SET:12345:Marco:Polo");
+			System.out.println("Waiting for response...");
+			System.out.println("Received on client: " + StreamHelper.readFromInput(in));
 			//Write code here
 			
 		}finally{
