@@ -25,7 +25,7 @@ public class NodeData {
 		treatedIdSet = Collections.synchronizedSet(new HashSet<Long>());
 	}
 	
-	public Map<String, String> getDataMap(){
+	public Map<String, String> getKeyMap(){
 		return keyMap;
 	}
 	
