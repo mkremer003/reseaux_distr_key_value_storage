@@ -17,12 +17,12 @@ public class NodeData {
 	
 	private final Map<String, String> keyMap;
 	private final List<String> neighborNodes;
-	private final Set<Long> treatedIdSet;
+	private final Set<Integer> treatedIdSet;
 
 	NodeData(){
 		keyMap = Collections.synchronizedMap(new HashMap<String, String>());
 		neighborNodes = Collections.synchronizedList(new ArrayList<String>());
-		treatedIdSet = Collections.synchronizedSet(new HashSet<Long>());
+		treatedIdSet = Collections.synchronizedSet(new HashSet<Integer>());
 	}
 	
 	public Map<String, String> getKeyMap(){
@@ -33,7 +33,7 @@ public class NodeData {
 		return neighborNodes;
 	}
 	
-	public Set<Long> getTreatedIdSet(){
+	public Set<Integer> getTreatedIdSet(){
 		return treatedIdSet;
 	}
 }
