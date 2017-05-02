@@ -13,19 +13,19 @@ import java.util.Map;
  */
 public class NodeData {
 	
-	private final Map<String, String> data;
-	private final List<String> neighbor;
+	private final Map<String, String> keyMap;
+	private final List<String> neighborNodes;
 
 	NodeData(){
-		data = Collections.synchronizedMap(new HashMap<String, String>());
-		neighbor = Collections.synchronizedList(new ArrayList<String>());
+		keyMap = Collections.synchronizedMap(new HashMap<String, String>());
+		neighborNodes = Collections.synchronizedList(new ArrayList<String>());
 	}
 	
 	public Map<String, String> getDataMap(){
-		return data;
+		return keyMap;
 	}
 	
 	public List<String> getNeighborAddresses(){
-		return neighbor;
+		return neighborNodes;
 	}
 }
