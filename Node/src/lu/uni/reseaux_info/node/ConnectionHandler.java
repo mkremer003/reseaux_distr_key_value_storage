@@ -4,16 +4,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
-import java.util.Map;
 
 import lu.uni.reseaux_info.commons.StreamHelper;
 
 public class ConnectionHandler extends Thread{
 	
 	private final Socket connection;
-	private final Map<String, String> data;
+	private final NodeData data;
 
-	ConnectionHandler(Socket connection, Map<String, String> data){
+	ConnectionHandler(Socket connection, NodeData data){
 		this.data = data;
 		this.connection = connection;
 	}
