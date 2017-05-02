@@ -25,9 +25,9 @@ public class ConnectionHandler extends Thread{
 			OutputStream out = connection.getOutputStream();
 			
 			String[] message = StreamHelper.readFromInput(in).split(":");
-			if(message[0] == "SET") {
+			if(message[0].equals("SET")) {
 				data.getKeyMap().put(message[2], message[3]);
-			}else if(message[0] == "GET") {
+			}else if(message[0].equals("GET")) {
 				//TODO: Get message implementation
 			}else {
 				System.out.println(message[0] + " is a wrong package type.");
