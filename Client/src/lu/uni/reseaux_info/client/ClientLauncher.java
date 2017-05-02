@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.net.Socket;
 import java.util.Scanner;
 
+import lu.uni.reseaux_info.commons.StreamHelper;
+
 public class ClientLauncher {
 
 	public static void main(String[] args) throws IOException {
@@ -35,6 +37,7 @@ public class ClientLauncher {
 				break;
 			}
 			
+			StreamHelper.writeToOutput(clientSocket.getOutputStream(), "This is a test message");
 			//Write code here
 			
 		}finally{
