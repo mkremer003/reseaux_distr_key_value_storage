@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
-import java.util.Map;
 
 import lu.uni.reseaux_info.commons.StreamHelper;
 
@@ -25,14 +24,15 @@ public class ConnectionHandler extends Thread{
 			OutputStream out = connection.getOutputStream();
 			
 			String[] message = StreamHelper.readFromInput(in).split(":");
+			System.out.println("Received: " + message);
 			if(message[0].equals("SET")) {
 				data.getKeyMap().put(message[2], message[3]);
+				StreamHelper.writeToOutput(out, "RES:" + System.currentTimeMillis()%100000 + ":" + message[2] + ":" + message[3]);
 			}else if(message[0].equals("GET")) {
 				//TODO: Get message implementation
 			}else {
 				System.out.println(message[0] + " is a wrong package type.");
 			}
-			System.out.println("Received: " + message);
 			//Write code here
 		}catch(IOException e){
 			System.err.println("Connection with " + connection + " has been terminated due to an error");
