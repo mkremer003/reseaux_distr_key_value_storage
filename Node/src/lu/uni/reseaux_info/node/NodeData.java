@@ -21,7 +21,7 @@ public class NodeData {
 		neighborNodes = Collections.synchronizedList(new ArrayList<String>());
 	}
 	
-	public Map<String, String> getDataMap(){
+	public Map<String, String> getKeyMap(){
 		return keyMap;
 	}
 	
