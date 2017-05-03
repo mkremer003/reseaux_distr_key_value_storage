@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
+import java.net.UnknownHostException;
 
 import lu.uni.reseaux_info.commons.StreamHelper;
 
@@ -49,6 +50,21 @@ public class ConnectionHandler extends Thread{
 				e.printStackTrace();
 			}
 			System.out.println("Connection with " + connection + " has been closed");
+		}
+	}
+	
+	private static String requestAnswer(String ip, int port, String messageToSend) throws IOException{
+		Socket connectionToOtherNode = null;
+		try{
+			connectionToOtherNode = new Socket(ip, port);
+
+			BufferedReader in = new BufferedReader(new InputStreamReader(connectionToOtherNode.getInputStream()));
+			BufferedWriter out = new BufferedWriter(new OutputStreamWriter(connectionToOtherNode.getOutputStream()));
+			
+			StreamHelper.writeToOutput(out, messageToSend);
+			return StreamHelper.readFromInput(in);
+		}finally{
+			if(connectionToOtherNode != null)connectionToOtherNode.close();
 		}
 	}
 }
