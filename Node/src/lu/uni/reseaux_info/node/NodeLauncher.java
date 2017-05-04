@@ -3,6 +3,7 @@ package lu.uni.reseaux_info.node;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketException;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
@@ -11,15 +12,15 @@ import lu.uni.reseaux_info.commons.ConnectionInfo;
 
 public class NodeLauncher {
 	
-	private final int port;
 	private final NodeData data;
+	private final ServerSocket welcomeSocket;
 	
-	public NodeLauncher(int port, NodeData data){
-		this.port = port;
+	public NodeLauncher(int port, NodeData data) throws IOException{
 		this.data = data;
+		this.welcomeSocket = new ServerSocket(port);
 	}
 	
-	public NodeLauncher(int port){
+	public NodeLauncher(int port) throws IOException{
 		this(port, new NodeData());
 	}
 
@@ -48,11 +49,12 @@ public class NodeLauncher {
 			}
 		}
 		
-		final int finalPort = port;
+		final NodeLauncher nodeLauncher = new NodeLauncher(port, data);
 		final Thread serverThread = new Thread(() -> {
 			try {
-				new NodeLauncher(finalPort, data).launch();
+				nodeLauncher.launch();
 			} catch (IOException e) {
+				System.err.println("Node execution will be terminated due to an unexpected error:");
 				e.printStackTrace();
 				System.exit(1);
 			}
@@ -60,16 +62,16 @@ public class NodeLauncher {
 		serverThread.start();
 		
 		try(Scanner s = new Scanner(System.in)){
-			System.out.println("You can enter commands over the command line. Enter \"help\" for an overview of available commands");
+			System.out.println("You can enter commands over the command line. Enter \"help\" for an overview of available commands.");
 			while(true){
 				String input[] = s.nextLine().split(" ");
 				if(input.length >= 1){
 					if(input[0].equalsIgnoreCase("help")){
 						System.out.println("Available commands:");
 						System.out.println("* help\t\t\tShows available commands");
-						System.out.println("* add <ip> <port>\t\t\tAdds a neighbor node to the list");
+						System.out.println("* add <ip> <port>\tAdds a neighbor node to the list");
 						System.out.println("* list\t\t\tShows currently registered neighbors");
-						System.out.println("* mappings\t\t\tShows currently registered key to value mappings");
+						System.out.println("* mappings\t\tShows currently registered key to value mappings");
 						System.out.println("* exit\t\t\tStops the execution of this node");
 					}else if(input[0].equalsIgnoreCase("add")){
 						if(input.length >= 3){
@@ -102,7 +104,7 @@ public class NodeLauncher {
 						}
 					}else if(input[0].equalsIgnoreCase("exit")){
 						System.out.println("Terminating server thread...");
-						System.exit(0);//TODO: Not very safe
+						nodeLauncher.close();
 						break;
 					}else{
 						System.out.println("Unknown command: " + input[0]);
@@ -113,18 +115,22 @@ public class NodeLauncher {
 	}
 	
 	public void launch() throws IOException{
-		ServerSocket welcomeSocket = null;
 		try{
-			welcomeSocket = new ServerSocket(port);
 			System.out.println("Listening on " + welcomeSocket + "...");
 			while(true){
 				Socket connectionSocket = welcomeSocket.accept();
 				System.out.println("Incoming connection from " + connectionSocket);
 				new ConnectionHandler(connectionSocket, data).start();
 			}
+		}catch(SocketException e){
+			System.out.println("Listening on " + welcomeSocket + " has been interrupted");
 		}finally{
-			if(welcomeSocket != null)welcomeSocket.close();
+			welcomeSocket.close();
 		}
+	}
+	
+	public void close() throws IOException{
+		welcomeSocket.close();
 	}
 
 }
