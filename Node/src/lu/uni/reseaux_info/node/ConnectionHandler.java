@@ -46,12 +46,11 @@ public class ConnectionHandler extends Thread {
 				} else {
 					boolean foundKey = false;
 					for (connectionInfo neighbor : data.getNeighborAddresses()) {
-						String[] responseMessage = requestAnswer(neighbor.getIp(), neighbor.getPort(),
-								message[0] + ":" + message[1] + ":" + message[2]).split(":");
+						String response = requestAnswer(neighbor.getIp(), neighbor.getPort(), message[0] + ":" + message[1] + ":" + message[2]);
+						String[] responseMessage = response.split(":");
 						if (responseMessage[0].equals("RES")) {
 							foundKey = true;
-							StreamHelper.writeToOutput(out, requestAnswer(neighbor.getIp(), neighbor.getPort(),
-									message[0] + ":" + message[1] + ":" + message[2]));
+							StreamHelper.writeToOutput(out, response);
 							break;
 						}
 					}
