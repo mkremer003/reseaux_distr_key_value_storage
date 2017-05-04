@@ -8,7 +8,7 @@ import java.io.OutputStreamWriter;
 import java.net.Socket;
 
 import lu.uni.reseaux_info.commons.StreamHelper;
-import lu.uni.reseaux_info.commons.connectionInfo;
+import lu.uni.reseaux_info.commons.ConnectionInfo;
 
 public class ConnectionHandler extends Thread {
 
@@ -39,13 +39,13 @@ public class ConnectionHandler extends Thread {
 				System.out.println("Response sent");
 				
 			// GET Method
-			} else if (message[0].equals("GET")) {
+			} else if (message[0].equals("GET")) {//TODO: Check if package already has been treated
 				if (data.getKeyMap().get(message[2]) != null) {
 					StreamHelper.writeToOutput(out, "RES:" + System.currentTimeMillis() % 100000 + ":" + message[2]
 							+ ":" + data.getKeyMap().get(message[2]));
 				} else {
 					boolean foundKey = false;
-					for (connectionInfo neighbor : data.getNeighborAddresses()) {
+					for (ConnectionInfo neighbor : data.getNeighborAddresses()) {
 						String response = requestAnswer(neighbor.getIp(), neighbor.getPort(), message[0] + ":" + message[1] + ":" + message[2]);
 						String[] responseMessage = response.split(":");
 						if (responseMessage[0].equals("RES")) {
