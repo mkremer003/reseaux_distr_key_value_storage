@@ -30,14 +30,14 @@ public class ConnectionHandler extends Thread {
 			String[] message = inputLine.split(":");
 			System.out.println("Received: " + inputLine);
 
-			if (data.getTreatedIdSet().contains(Integer.parseInt(message[1])) == false) {
+			if (!data.getTreatedIdSet().contains(Integer.parseInt(message[1]))) {
+				data.getTreatedIdSet().add(Integer.parseInt(message[1]));
 				// SET Method
 				if (message[0].equals("SET")) {
 					data.getKeyMap().put(message[2], message[3]);
 					System.out.println("Set: " + data.getKeyMap().get(message[2]));
 					StreamHelper.writeToOutput(out,
 							"RES:" + System.currentTimeMillis() % 100000 + ":" + message[2] + ":" + message[3]);
-					data.getTreatedIdSet().add(Integer.parseInt(message[1]));
 					System.out.println("Response sent");
 
 					// GET Method
@@ -54,7 +54,6 @@ public class ConnectionHandler extends Thread {
 							if (responseMessage[0].equals("RES")) {
 								foundKey = true;
 								StreamHelper.writeToOutput(out, response);
-								data.getTreatedIdSet().add(Integer.parseInt(responseMessage[1]));
 								break;
 							}
 						}

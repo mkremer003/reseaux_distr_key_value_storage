@@ -51,10 +51,10 @@ public class ClientLauncher {
 					System.out.println(
 							"Enter the GET or SET message you wish to send in the format TYPE:KEY or TYPE:KEY:VALUE");
 					String[] input = scanner.nextLine().split(":");
-					if (input[0].equals("SET")) {
+					if (input[0].equals("GET")) {
 						StreamHelper.writeToOutput(out,
 								input[0] + ":" + System.currentTimeMillis() % 100000 + ":" + input[1]);
-					} else if (input[0].equals("GET")) {
+					} else if (input[0].equals("SET")) {
 						StreamHelper.writeToOutput(out,
 								input[0] + ":" + System.currentTimeMillis() % 100000 + ":" + input[1] + ":" + input[2]);
 					} else {
