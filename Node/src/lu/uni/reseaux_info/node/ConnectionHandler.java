@@ -51,7 +51,7 @@ public class ConnectionHandler extends Thread {
 							String response = requestAnswer(neighbor.getIp(), neighbor.getPort(),
 									message[0] + ":" + message[1] + ":" + message[2]);
 							String[] responseMessage = response.split(":");
-							if (responseMessage[0].equals("RES")) {
+							if (responseMessage[0].equals("RES") && !responseMessage[3].equalsIgnoreCase("null")) {
 								foundKey = true;
 								StreamHelper.writeToOutput(out, response);
 								break;
@@ -61,7 +61,6 @@ public class ConnectionHandler extends Thread {
 							System.out.println("Key not found.");
 							StreamHelper.writeToOutput(out,
 									"RES:" + System.currentTimeMillis() % 100000 + ":" + message[2] + ":null");
-							data.getTreatedIdSet().add(Integer.parseInt(message[1]));
 						}
 					}
 				} else {
@@ -69,6 +68,8 @@ public class ConnectionHandler extends Thread {
 				}
 			} else {
 				System.out.println("The package with the id " + message[1] + " has already been treated");
+				StreamHelper.writeToOutput(out,
+						"RES:" + System.currentTimeMillis() % 100000 + ":" + message[2] + ":null");
 			}
 
 			// Write code here
