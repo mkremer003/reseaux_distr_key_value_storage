@@ -33,7 +33,7 @@ public class ClientLauncher {
 						continue;
 					}
 					clientSocket = new Socket(ip, port);
-					
+					System.out.println("Connected to client " + ip + ":" + port);
 				}else{
 					System.out.println("Invalid node address and port");
 					continue;
@@ -43,10 +43,29 @@ public class ClientLauncher {
 			BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 			BufferedWriter out = new BufferedWriter(new OutputStreamWriter(clientSocket.getOutputStream()));
 			
-			StreamHelper.writeToOutput(out, "SET:12345:Marco:Polo");
-			System.out.println("Waiting for response...");
-			System.out.println("Received on client: " + StreamHelper.readFromInput(in));
-			//Write code here
+			while(true) {
+				int action = scanner.nextInt();
+				System.out.println("1. Send a message\n2.EXIT");
+				if(action == 1) {
+					System.out.println("Enter the GET or SET message you wish to send in the format TYPE:KEY or TYPE:KEY:VALUE");
+					String[] input = scanner.nextLine().split(":");
+					if(input[0].equals("SET")) {
+						StreamHelper.writeToOutput(out, input[0] + ":" + System.currentTimeMillis() % 100000 + ":" + input[1]);
+					}else if(input[0].equals("GET")) {
+						StreamHelper.writeToOutput(out, input[0] + ":" + System.currentTimeMillis() % 100000 + ":" + input[1] + ":" + input[2]);
+					}else {
+						System.out.println("Wrong package type. Only GET or SET is accepted.");
+					}
+					
+					System.out.println("Waiting for response...");
+					System.out.println("Received on client: " + StreamHelper.readFromInput(in));
+				}else if(action == 2) {
+					break;
+				}else {
+					System.out.println("Wrong input. Enter 1 or 2.");
+				}
+			}
+			
 			
 		}finally{
 			scanner.close();
