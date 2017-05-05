@@ -43,31 +43,35 @@ public class ClientLauncher {
 				}
 				BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 				BufferedWriter out = new BufferedWriter(new OutputStreamWriter(clientSocket.getOutputStream()));
-			
-				System.out.println("1. Send a message\n2.EXIT");
-				int action = scanner.nextInt();
-				scanner.nextLine();
-				if (action == 1) {
-					System.out.println(
-							"Enter the GET or SET message you wish to send in the format TYPE:KEY or TYPE:KEY:VALUE");
-					String[] input = scanner.nextLine().split(":");
-					if (input[0].equals("GET")) {
-						StreamHelper.writeToOutput(out,
-								input[0] + ":" + System.currentTimeMillis() % 100000 + ":" + input[1]);
-					} else if (input[0].equals("SET")) {
-						StreamHelper.writeToOutput(out,
-								input[0] + ":" + System.currentTimeMillis() % 100000 + ":" + input[1] + ":" + input[2]);
-					} else {
-						System.out.println("Wrong package type. Only GET or SET is accepted.");
+				
+				String[] packageString = new String[3];
+				while(true) {
+					System.out.println("Enter your message (q to quit)");
+					packageString = scanner.nextLine().split(":");
+					scanner.nextLine();
+					if(packageString[0].equals("GET") || packageString[0].equals("SET")) {
+						break;
+					}else{
+						System.out.println("Wrong input. Your message has to be of the format TYPE:KEY or TYPE:KEY:VALUE. Accepted types: GET, SET");
 					}
-
-					System.out.println("Waiting for response...");
-					System.out.println("Received on client: " + StreamHelper.readFromInput(in));
-				} else if (action == 2) {
-					break;
-				} else {
-					System.out.println("Wrong input. Enter 1 or 2.");
 				}
+				
+				if(packageString[0].equals("GET")) {
+					StreamHelper.writeToOutput(out,
+							packageString[0] + ":" + System.currentTimeMillis() % 100000 + ":" + packageString[1]);
+					
+				}else if(packageString[0].equals("SET")) {
+					StreamHelper.writeToOutput(out,
+							packageString[0] + ":" + System.currentTimeMillis() % 100000 + ":" + packageString[1] + ":" + packageString[2]);
+					
+				}else if(packageString[0].equals("q")){
+					break;
+				}
+				
+				System.out.println("Waiting for response...");
+				System.out.println("Received on client: " + StreamHelper.readFromInput(in));
+				System.out.println("Closing connection.");
+				
 			}
 
 		} finally {
