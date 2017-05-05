@@ -17,33 +17,33 @@ public class ClientLauncher {
 		Socket clientSocket = null;
 		try {
 			while (true) {
-				System.out.println("Enter node address and port: (Format: ADDRESS:PORT)");
-				String input[] = scanner.nextLine().split(":");
-				if (input.length == 2) {
-					String ip = input[0];
-					int port = 0;
-					try {
-						port = Integer.parseInt(input[1]);
-						if (port < 0) {
+				while (true) {
+					System.out.println("Enter node address and port: (Format: ADDRESS:PORT)");
+					String input[] = scanner.nextLine().split(":");
+					if (input.length == 2) {
+						String ip = input[0];
+						int port = 0;
+						try {
+							port = Integer.parseInt(input[1]);
+							if (port < 0) {
+								System.out.println("Invalid port: " + input[1]);
+								continue;
+							}
+						} catch (NumberFormatException e) {
 							System.out.println("Invalid port: " + input[1]);
 							continue;
 						}
-					} catch (NumberFormatException e) {
-						System.out.println("Invalid port: " + input[1]);
+						clientSocket = new Socket(ip, port);
+						System.out.println("Connected to client " + ip + ":" + port);
+					} else {
+						System.out.println("Invalid node address and port");
 						continue;
 					}
-					clientSocket = new Socket(ip, port);
-					System.out.println("Connected to client " + ip + ":" + port);
-				} else {
-					System.out.println("Invalid node address and port");
-					continue;
+					break;
 				}
-				break;
-			}
-			BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-			BufferedWriter out = new BufferedWriter(new OutputStreamWriter(clientSocket.getOutputStream()));
-
-			while (true) {
+				BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+				BufferedWriter out = new BufferedWriter(new OutputStreamWriter(clientSocket.getOutputStream()));
+			
 				System.out.println("1. Send a message\n2.EXIT");
 				int action = scanner.nextInt();
 				scanner.nextLine();
