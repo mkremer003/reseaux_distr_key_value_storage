@@ -9,6 +9,18 @@ public class ConnectionInfo {
 		this.port = port;
 	}
 	
+	public ConnectionInfo(String peer) throws NumberFormatException{
+		String splitted[] = peer.split(":");
+		if(splitted.length == 2){
+			this.IP = splitted[0];
+			this.port = Integer.parseInt(splitted[1]);
+		}else if(splitted.length == 1){
+			this.IP = splitted[0];
+		}else{
+			throw new IllegalArgumentException("Invalid format: " + peer);
+		}
+	}
+	
 	public String getIp() {
 		return this.IP;
 	}

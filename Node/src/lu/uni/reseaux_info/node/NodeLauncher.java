@@ -1,5 +1,6 @@
 package lu.uni.reseaux_info.node;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -72,6 +73,8 @@ public class NodeLauncher {
 						System.out.println("* add <ip> <port>\tAdds a neighbor node to the list");
 						System.out.println("* list\t\t\tShows currently registered neighbors");
 						System.out.println("* mappings\t\tShows currently registered key to value mappings");
+						System.out.println("* save <file>\t\tSaves the data of this node to a file");
+						System.out.println("* load <file>\t\tLoads the data for this node from a file");
 						System.out.println("* exit\t\t\tStops the execution of this node");
 					}else if(input[0].equalsIgnoreCase("add")){
 						if(input.length >= 3){
@@ -101,6 +104,33 @@ public class NodeLauncher {
 							for(Map.Entry<String, String> e : keyMap.entrySet()){
 								System.out.println("* " + e.getKey() + " -> " + e.getValue());
 							}
+						}
+					}else if(input[0].equalsIgnoreCase("save")){
+						if(input.length >= 2){
+							try{
+								data.saveToFile(new File(input[1]));
+								System.out.println("Data has been saved");
+							}catch(IOException e){
+								System.err.println("Data could not be saved");
+								e.printStackTrace();
+							}
+						}else{
+							System.out.println("Expected format: save <file>");
+						}
+					}else if(input[0].equalsIgnoreCase("load")){
+						if(input.length >= 2){
+							try{
+								if(data.loadFromFile(new File(input[1]))){
+									System.out.println("Data has been loaded");
+								}else{
+									System.out.println("Data was not loaded");
+								}
+							}catch(IOException e){
+								System.err.println("Data could not be loaded");
+								e.printStackTrace();
+							}
+						}else{
+							System.out.println("Expected format: load <file>");
 						}
 					}else if(input[0].equalsIgnoreCase("exit")){
 						System.out.println("Terminating server thread...");
