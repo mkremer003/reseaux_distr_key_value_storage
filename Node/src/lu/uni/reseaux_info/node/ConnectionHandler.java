@@ -6,9 +6,10 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
+import java.util.ArrayList;
 
-import lu.uni.reseaux_info.commons.StreamHelper;
 import lu.uni.reseaux_info.commons.ConnectionInfo;
+import lu.uni.reseaux_info.commons.StreamHelper;
 
 public class ConnectionHandler extends Thread {
 
@@ -35,11 +36,10 @@ public class ConnectionHandler extends Thread {
 				// SET Method
 				if (message[0].equals("SET")) {
 					data.getKeyMap().put(message[2], message[3]);
-					System.out.println("Set: " + data.getKeyMap().get(message[2]));
+					System.out.println("Set: " + message[2] + " -> " + data.getKeyMap().get(message[2]));
 					StreamHelper.writeToOutput(out,
 							"RES:" + System.currentTimeMillis() % 100000 + ":" + message[2] + ":" + message[3]);
-					System.out.println("Response sent");
-
+					
 					// GET Method
 				} else if (message[0].equals("GET")) {
 					if (data.getKeyMap().get(message[2]) != null) {
@@ -47,14 +47,22 @@ public class ConnectionHandler extends Thread {
 								+ ":" + data.getKeyMap().get(message[2]));
 					} else {
 						boolean foundKey = false;
-						for (ConnectionInfo neighbor : data.getNeighborAddresses()) {
-							String response = requestAnswer(neighbor.getIp(), neighbor.getPort(),
-									message[0] + ":" + message[1] + ":" + message[2]);
-							String[] responseMessage = response.split(":");
-							if (responseMessage[0].equals("RES") && !responseMessage[3].equalsIgnoreCase("null")) {
-								foundKey = true;
-								StreamHelper.writeToOutput(out, response);
-								break;
+						ArrayList<ConnectionInfo> neighbors;
+						synchronized(data.getNeighborAddresses()){
+							neighbors = new ArrayList<>(data.getNeighborAddresses());
+						}
+						for (ConnectionInfo neighbor : neighbors) {
+							try{
+								String response = requestAnswer(neighbor.getIp(), neighbor.getPort(),
+										message[0] + ":" + message[1] + ":" + message[2]);
+								String[] responseMessage = response.split(":");
+								if (responseMessage[0].equals("RES") && !responseMessage[3].equalsIgnoreCase("null")) {
+									foundKey = true;
+									StreamHelper.writeToOutput(out, response);
+									break;
+								}
+							}catch(IOException e){
+								System.out.println("Host is unreachable: " + neighbor);
 							}
 						}
 						if (!foundKey) {
@@ -65,6 +73,8 @@ public class ConnectionHandler extends Thread {
 					}
 				} else {
 					System.out.println(message[0] + " is a wrong package type. Only SET or GET packages are accepted.");
+					StreamHelper.writeToOutput(out,
+							"RES:" + System.currentTimeMillis() % 100000 + ":null:null");
 				}
 			} else {
 				System.out.println("The package with the id " + message[1] + " has already been treated");

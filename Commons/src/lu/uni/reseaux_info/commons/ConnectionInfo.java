@@ -16,4 +16,9 @@ public class ConnectionInfo {
 	public int getPort() {
 		return this.port;
 	}
+	
+	@Override
+	public String toString(){
+		return IP + ":" + port;
+	}
 }
