@@ -29,40 +29,49 @@ public class ConnectionHandler extends Thread {
 			String inputLine = StreamHelper.readFromInput(in);
 			String[] message = inputLine.split(":");
 			System.out.println("Received: " + inputLine);
-			
-			// SET Method
-			if (message[0].equals("SET")) {
-				data.getKeyMap().put(message[2], message[3]);
-				System.out.println("Set: " + data.getKeyMap().get(message[2]));
-				StreamHelper.writeToOutput(out,
-						"RES:" + System.currentTimeMillis() % 100000 + ":" + message[2] + ":" + message[3]);
-				System.out.println("Response sent");
-				
-			// GET Method
-			} else if (message[0].equals("GET")) {//TODO: Check if package already has been treated
-				if (data.getKeyMap().get(message[2]) != null) {
-					StreamHelper.writeToOutput(out, "RES:" + System.currentTimeMillis() % 100000 + ":" + message[2]
-							+ ":" + data.getKeyMap().get(message[2]));
-				} else {
-					boolean foundKey = false;
-					for (ConnectionInfo neighbor : data.getNeighborAddresses()) {
-						String response = requestAnswer(neighbor.getIp(), neighbor.getPort(), message[0] + ":" + message[1] + ":" + message[2]);
-						String[] responseMessage = response.split(":");
-						if (responseMessage[0].equals("RES")) {
-							foundKey = true;
-							StreamHelper.writeToOutput(out, response);
-							break;
+
+			if (data.getTreatedIdSet().contains(Integer.parseInt(message[1])) == false) {
+				// SET Method
+				if (message[0].equals("SET")) {
+					data.getKeyMap().put(message[2], message[3]);
+					System.out.println("Set: " + data.getKeyMap().get(message[2]));
+					StreamHelper.writeToOutput(out,
+							"RES:" + System.currentTimeMillis() % 100000 + ":" + message[2] + ":" + message[3]);
+					data.getTreatedIdSet().add(Integer.parseInt(message[1]));
+					System.out.println("Response sent");
+
+					// GET Method
+				} else if (message[0].equals("GET")) {
+					if (data.getKeyMap().get(message[2]) != null) {
+						StreamHelper.writeToOutput(out, "RES:" + System.currentTimeMillis() % 100000 + ":" + message[2]
+								+ ":" + data.getKeyMap().get(message[2]));
+					} else {
+						boolean foundKey = false;
+						for (ConnectionInfo neighbor : data.getNeighborAddresses()) {
+							String response = requestAnswer(neighbor.getIp(), neighbor.getPort(),
+									message[0] + ":" + message[1] + ":" + message[2]);
+							String[] responseMessage = response.split(":");
+							if (responseMessage[0].equals("RES")) {
+								foundKey = true;
+								StreamHelper.writeToOutput(out, response);
+								data.getTreatedIdSet().add(Integer.parseInt(responseMessage[1]));
+								break;
+							}
+						}
+						if (!foundKey) {
+							System.out.println("Key not found.");
+							StreamHelper.writeToOutput(out,
+									"RES:" + System.currentTimeMillis() % 100000 + ":" + message[2] + ":null");
+							data.getTreatedIdSet().add(Integer.parseInt(message[1]));
 						}
 					}
-					if (!foundKey) {
-						System.out.println("Key not found.");
-						StreamHelper.writeToOutput(out, "RES:" + System.currentTimeMillis() % 100000 + ":" + message[2]
-								+ ":null");
-					}
+				} else {
+					System.out.println(message[0] + " is a wrong package type. Only SET or GET packages are accepted.");
 				}
 			} else {
-				System.out.println(message[0] + " is a wrong package type. Only SET or GET packages are accepted.");
+				System.out.println("The package with the id " + message[1] + " has already been treated");
 			}
+
 			// Write code here
 		} catch (IOException e) {
 			System.err.println("Connection with " + connection + " has been terminated due to an error");
