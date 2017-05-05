@@ -1,5 +1,6 @@
 package lu.uni.reseaux_info.node;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -8,7 +9,7 @@ import java.util.Scanner;
 
 import lu.uni.reseaux_info.commons.ConnectionInfo;
 
-public class NodeLauncher {
+public class NodeLauncher implements AutoCloseable, Closeable{
 	
 	private final NodeData data;
 	private final ServerSocket welcomeSocket;
@@ -33,14 +34,15 @@ public class NodeLauncher {
 			}else if(arg.equalsIgnoreCase("-neighbors") && i < args.length - 1){
 				for(i = i + 1 ; i < args.length ; i++){
 					if(args[i] != null){
-						String neighbor[] = args[i].split(":");
-						if(neighbor[0].startsWith("-")){
+						if(args[i].startsWith("-")){
 							i--;
 							break;
-						}else if(neighbor.length == 2){
-							data.getNeighborAddresses().add(new ConnectionInfo(neighbor[0], Integer.parseInt(neighbor[1])));
 						}else{
-							System.out.println("Invalid neighbor: " + args[i]);
+							try{
+								data.getNeighborAddresses().add(new ConnectionInfo(args[i]));
+							}catch(IllegalArgumentException e){
+								System.out.println("Invalid neighbor: " + args[i]);
+							}
 						}
 					}
 				}
@@ -85,6 +87,7 @@ public class NodeLauncher {
 		}
 	}
 	
+	@Override
 	public void close() throws IOException{
 		welcomeSocket.close();
 	}
