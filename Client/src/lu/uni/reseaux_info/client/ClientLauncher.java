@@ -48,7 +48,6 @@ public class ClientLauncher {
 				while(true) {
 					System.out.println("Enter your message (q to quit)");
 					packageString = scanner.nextLine().split(":");
-					scanner.nextLine();
 					if(packageString[0].equals("GET") || packageString[0].equals("SET")) {
 						break;
 					}else{
