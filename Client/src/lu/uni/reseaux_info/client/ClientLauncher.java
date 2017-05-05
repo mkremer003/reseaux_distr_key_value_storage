@@ -44,8 +44,9 @@ public class ClientLauncher {
 			BufferedWriter out = new BufferedWriter(new OutputStreamWriter(clientSocket.getOutputStream()));
 
 			while (true) {
-				int action = scanner.nextInt();
 				System.out.println("1. Send a message\n2.EXIT");
+				int action = scanner.nextInt();
+				scanner.nextLine();
 				if (action == 1) {
 					System.out.println(
 							"Enter the GET or SET message you wish to send in the format TYPE:KEY or TYPE:KEY:VALUE");
