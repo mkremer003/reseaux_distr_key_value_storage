@@ -13,9 +13,8 @@ import lu.uni.reseaux_info.commons.StreamHelper;
 public class ClientLauncher {
 
 	public static void main(String[] args) throws IOException {
-		Scanner scanner = new Scanner(System.in);
 		Socket clientSocket = null;
-		try {
+		try(Scanner scanner = new Scanner(System.in);) {
 			while (true) {
 				while (true) {
 					System.out.println("Enter node address and port: (Format: ADDRESS:PORT)");
@@ -47,6 +46,8 @@ public class ClientLauncher {
 				String[] packageString = new String[3];
 				while(true) {
 					System.out.println("Enter your message (q to quit)");
+					System.out.println("Expected format: TYPE:KEY or TYPE:KEY:VALUE");
+					System.out.println("Allowed message types: SET or GET");
 					packageString = scanner.nextLine().split(":");
 					if(packageString[0].equals("GET") || packageString[0].equals("SET")) {
 						break;
@@ -74,7 +75,6 @@ public class ClientLauncher {
 			}
 
 		} finally {
-			scanner.close();
 			if (clientSocket != null)
 				clientSocket.close();
 		}

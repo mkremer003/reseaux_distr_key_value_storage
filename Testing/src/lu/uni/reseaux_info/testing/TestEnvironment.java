@@ -14,12 +14,12 @@ public class TestEnvironment {
 			System.out.println("How many nodes do you want to launch?");
 			final int node_count = s.nextInt();
 			if(node_count > 0){
+				System.out.format("Setting up network of %d linked nodes...\n", node_count);
 				final Node nodes[] = new Node[node_count];
 				final ArrayList<ConnectionInfo> addresses = new ArrayList<>();
 				for(int i = 0 ; i < node_count ; i++){
 					try{
 						nodes[i] = new Node();
-						System.out.println("Created node with port " + nodes[i].getPort());
 						addresses.add(nodes[i].getConnectionInfo());
 					}catch(IOException e){
 						System.err.println("Failed to create node. Retrying...");
@@ -33,7 +33,10 @@ public class TestEnvironment {
 				for(int i = 0 ; i < node_count ; i++){
 					launchAsync(nodes[i]);
 				}
-				
+				try {
+					Thread.sleep(2000);
+				} catch (InterruptedException e) {}
+				System.out.println("You can now connect to any of the created nodes with the client application");
 			}else{
 				System.err.println("Amount of nodes must be positive!");
 			}

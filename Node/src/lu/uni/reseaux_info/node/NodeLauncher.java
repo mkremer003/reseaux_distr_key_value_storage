@@ -10,7 +10,7 @@ public class NodeLauncher{
 	public static void main(String[] args) throws IOException {
 		final NodeData data = new NodeData();
 		System.out.println("Starting node...");
-		int port = 18065;
+		int port = 0;//0 means random port
 		for(int i = 0 ; i < args.length ; i++){
 			String arg = args[i];
 			if(arg.equalsIgnoreCase("-port") && i < args.length - 1){
