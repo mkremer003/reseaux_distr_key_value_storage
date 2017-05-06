@@ -9,7 +9,7 @@ import lu.uni.reseaux_info.commons.ConnectionInfo;
 
 public class CommandLineHandler {
 
-	static boolean handleCommand(String input[], NodeData data, NodeLauncher nodeLauncher) throws IOException{
+	static boolean handleCommand(String input[], NodeData data, Node nodeLauncher) throws IOException{
 		if(input[0].equalsIgnoreCase("help")){
 			System.out.println("Available commands:");
 			System.out.println("* help\t\t\tShows available commands");

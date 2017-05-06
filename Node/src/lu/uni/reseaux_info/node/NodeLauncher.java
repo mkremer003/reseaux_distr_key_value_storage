@@ -1,27 +1,11 @@
 package lu.uni.reseaux_info.node;
 
-import java.io.Closeable;
 import java.io.IOException;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.net.SocketException;
 import java.util.Scanner;
 
 import lu.uni.reseaux_info.commons.ConnectionInfo;
 
-public class NodeLauncher implements AutoCloseable, Closeable{
-	
-	private final NodeData data;
-	private final ServerSocket welcomeSocket;
-	
-	public NodeLauncher(int port, NodeData data) throws IOException{
-		this.data = data;
-		this.welcomeSocket = new ServerSocket(port);
-	}
-	
-	public NodeLauncher(int port) throws IOException{
-		this(port, new NodeData());
-	}
+public class NodeLauncher{
 
 	public static void main(String[] args) throws IOException {
 		final NodeData data = new NodeData();
@@ -49,10 +33,10 @@ public class NodeLauncher implements AutoCloseable, Closeable{
 			}
 		}
 		
-		final NodeLauncher nodeLauncher = new NodeLauncher(port, data);
+		final Node node = new Node(port, data);
 		final Thread serverThread = new Thread(() -> {
 			try {
-				nodeLauncher.launch();
+				node.launch();
 			} catch (IOException e) {
 				System.err.println("Node execution will be terminated due to an unexpected error:");
 				e.printStackTrace();
@@ -65,31 +49,11 @@ public class NodeLauncher implements AutoCloseable, Closeable{
 			System.out.println("You can enter commands over the command line. Enter \"help\" for an overview of available commands.");
 			while(true){
 				String input[] = s.nextLine().split(" ");
-				if(input.length >= 1 && !CommandLineHandler.handleCommand(input, data, nodeLauncher)){
+				if(input.length >= 1 && !CommandLineHandler.handleCommand(input, data, node)){
 					break;
 				}
 			}
 		}
-	}
-	
-	public void launch() throws IOException{
-		try{
-			System.out.println("Listening on " + welcomeSocket + "...");
-			while(true){
-				Socket connectionSocket = welcomeSocket.accept();
-				System.out.println("Incoming connection from " + connectionSocket);
-				new ConnectionHandler(connectionSocket, data).start();
-			}
-		}catch(SocketException e){
-			System.out.println("Listening on " + welcomeSocket + " has been interrupted");
-		}finally{
-			welcomeSocket.close();
-		}
-	}
-	
-	@Override
-	public void close() throws IOException{
-		welcomeSocket.close();
 	}
 
 }
