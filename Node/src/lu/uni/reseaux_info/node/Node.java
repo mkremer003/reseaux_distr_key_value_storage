@@ -6,6 +6,8 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
 
+import lu.uni.reseaux_info.commons.ConnectionInfo;
+
 public class Node implements AutoCloseable, Closeable{
 	
 	private final NodeData data;
@@ -54,6 +56,10 @@ public class Node implements AutoCloseable, Closeable{
 	
 	public String getAddress(){
 		return welcomeSocket.getInetAddress().getHostAddress();
+	}
+	
+	public ConnectionInfo getConnectionInfo(){
+		return new ConnectionInfo(getAddress(), getPort());
 	}
 
 }
