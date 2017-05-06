@@ -39,7 +39,7 @@ public class ConnectionHandler extends Thread {
 					System.out.println("Set: " + message[2] + " -> " + data.getKeyMap().get(message[2]));
 					StreamHelper.writeToOutput(out,
 							"RES:" + System.currentTimeMillis() % 100000 + ":" + message[2] + ":" + message[3]);
-					
+
 					// GET Method
 				} else if (message[0].equals("GET")) {
 					if (data.getKeyMap().get(message[2]) != null) {
@@ -48,11 +48,13 @@ public class ConnectionHandler extends Thread {
 					} else {
 						boolean foundKey = false;
 						ArrayList<ConnectionInfo> neighbors;
-						synchronized(data.getNeighborAddresses()){
+						synchronized (data.getNeighborAddresses()) {
 							neighbors = new ArrayList<>(data.getNeighborAddresses());
 						}
 						for (ConnectionInfo neighbor : neighbors) {
-							try{
+							try {
+								System.out.println("Key not found at " + connection.getLocalAddress().getHostAddress() + ":" + connection.getLocalPort() + ", sending GET:" + message[1] + ":" + message[2]
+										+ " package to " + neighbor.getIp() + ":" + neighbor.getPort());
 								String response = requestAnswer(neighbor.getIp(), neighbor.getPort(),
 										message[0] + ":" + message[1] + ":" + message[2]);
 								String[] responseMessage = response.split(":");
@@ -61,7 +63,7 @@ public class ConnectionHandler extends Thread {
 									StreamHelper.writeToOutput(out, response);
 									break;
 								}
-							}catch(IOException e){
+							} catch (IOException e) {
 								System.out.println("Host is unreachable: " + neighbor);
 							}
 						}
@@ -73,8 +75,7 @@ public class ConnectionHandler extends Thread {
 					}
 				} else {
 					System.out.println(message[0] + " is a wrong package type. Only SET or GET packages are accepted.");
-					StreamHelper.writeToOutput(out,
-							"RES:" + System.currentTimeMillis() % 100000 + ":null:null");
+					StreamHelper.writeToOutput(out, "RES:" + System.currentTimeMillis() % 100000 + ":null:null");
 				}
 			} else {
 				System.out.println("The package with the id " + message[1] + " has already been treated");
@@ -82,7 +83,6 @@ public class ConnectionHandler extends Thread {
 						"RES:" + System.currentTimeMillis() % 100000 + ":" + message[2] + ":null");
 			}
 
-			// Write code here
 		} catch (IOException e) {
 			System.err.println("Connection with " + connection + " has been terminated due to an error");
 			e.printStackTrace();
