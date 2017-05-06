@@ -71,11 +71,11 @@ public class ClientLauncher {
 				System.out.println("Waiting for response...");
 				System.out.println("Received on client: " + StreamHelper.readFromInput(in));
 				System.out.println("Closing connection.");
-				
+				clientSocket.close();
 			}
 
 		} finally {
-			if (clientSocket != null)
+			if (clientSocket != null && !clientSocket.isClosed())
 				clientSocket.close();
 		}
 	}
