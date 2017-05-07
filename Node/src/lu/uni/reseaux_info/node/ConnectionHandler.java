@@ -52,19 +52,21 @@ public class ConnectionHandler extends Thread {
 							neighbors = new ArrayList<>(data.getNeighborAddresses());
 						}
 						for (ConnectionInfo neighbor : neighbors) {
-							try {
-								System.out.println("Key not found at " + connection.getLocalAddress().getHostAddress() + ":" + connection.getLocalPort() + ", sending GET:" + message[1] + ":" + message[2]
-										+ " package to " + neighbor.getIp() + ":" + neighbor.getPort());
-								String response = requestAnswer(neighbor.getIp(), neighbor.getPort(),
-										message[0] + ":" + message[1] + ":" + message[2]);
-								String[] responseMessage = response.split(":");
-								if (responseMessage[0].equals("RES") && !responseMessage[3].equalsIgnoreCase("null")) {
-									foundKey = true;
-									StreamHelper.writeToOutput(out, response);
-									break;
+							if(!connection.getLocalAddress().getHostAddress().equals(neighbor.getIp()) || connection.getLocalPort() != neighbor.getPort()){
+								try {
+									System.out.println("Key not found at " + connection.getLocalAddress().getHostAddress() + ":" + connection.getLocalPort() + ", sending GET:" + message[1] + ":" + message[2]
+											+ " package to " + neighbor.getIp() + ":" + neighbor.getPort());
+									String response = requestAnswer(neighbor.getIp(), neighbor.getPort(),
+											message[0] + ":" + message[1] + ":" + message[2]);
+									String[] responseMessage = response.split(":");
+									if (responseMessage[0].equals("RES") && !responseMessage[3].equalsIgnoreCase("null")) {
+										foundKey = true;
+										StreamHelper.writeToOutput(out, response);
+										break;
+									}
+								} catch (IOException e) {
+									System.out.println("Host is unreachable: " + neighbor);
 								}
-							} catch (IOException e) {
-								System.out.println("Host is unreachable: " + neighbor);
 							}
 						}
 						if (!foundKey) {
