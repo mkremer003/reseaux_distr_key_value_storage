@@ -43,7 +43,7 @@ public class TestEnvironment {
 		}
 	}
 	
-	private static void launchAsync(Node node){
+	static void launchAsync(Node node){
 		new Thread(() -> {
 			try {
 				node.launch();

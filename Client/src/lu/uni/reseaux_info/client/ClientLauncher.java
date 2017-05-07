@@ -14,6 +14,8 @@ public class ClientLauncher {
 
 	public static void main(String[] args) throws IOException {
 		Socket clientSocket = null;
+		boolean loop = true;
+		for(String arg : args)if(arg.equalsIgnoreCase("-no-loop"))loop = false;
 		try(Scanner scanner = new Scanner(System.in);) {
 			while (true) {
 				while (true) {
@@ -72,6 +74,8 @@ public class ClientLauncher {
 				System.out.println("Received on client: " + StreamHelper.readFromInput(in));
 				System.out.println("Closing connection.");
 				clientSocket.close();
+				
+				if(!loop)break;
 			}
 
 		} finally {
