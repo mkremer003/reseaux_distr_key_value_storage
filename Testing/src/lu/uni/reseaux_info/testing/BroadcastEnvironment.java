@@ -18,13 +18,11 @@ public class BroadcastEnvironment {
 		
 		link(network[0], network[1], network[2], network[5]);
 		link(network[1], network[2], network[4], network[5]);
-		link(network[2], network[5], network[4], network[3]);
+		link(network[2], network[0], network[5], network[4]);
 		link(network[4], network[6], network[7], network[3]);
 		link(network[5], network[4], network[2], network[6]);
 		link(network[6], network[7], network[3], network[4]);
-		link(network[7], network[3], network[4], network[6]);
-		
-		network[3].getData().getKeyMap().put("Hello", "Aloha");
+		link(network[7], network[4], network[3], network[6]);
 		
 		for(int i = 0 ; i < network.length ; i++)launchAsync(network[i]);
 		
@@ -37,14 +35,15 @@ public class BroadcastEnvironment {
 		Thread.sleep(1000);
 		
 		System.out.println("\nLaunching client...");
-		String clientInput = "0.0.0.0:" + network[3].getPort() + "\r\nSET:Hello:Alola\r\n";
+		String clientInput = "0.0.0.0:" + network[3].getPort() + "\r\nSET:Hello:Aloha\r\n";
 		InputStream in = new ByteArrayInputStream(clientInput.getBytes(StandardCharsets.UTF_8));
 		System.setIn(in);
 		ClientLauncher.main(new String[]{"-no-loop"});
 
-		System.out.println("Sending GET query in 10...");
+		Thread.sleep(1000);
+		System.out.println("\nSending GET query in 10...");
 		Thread.sleep(7000);
-		System.out.println("\nSending GET query in 3...");
+		System.out.println("Sending GET query in 3...");
 		Thread.sleep(1000);
 		System.out.println("Sending GET query in 2...");
 		Thread.sleep(1000);
